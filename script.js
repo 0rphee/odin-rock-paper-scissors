@@ -1,3 +1,10 @@
+const resultsDiv = document.querySelector("#results");
+const scoreDiv = document.querySelector("#score");
+let globalRoundCount = 0;
+let playerScore = 0;
+let computerScore = 0;
+let winner;
+
 
 function getRndInteger(min, max) {
     // max is not inclusive
@@ -37,49 +44,70 @@ function playRound(playerSelection, computerSelection) {
 
 }
 
-function playGame() {
-    let playerScore = 0;
-    let computerScore = 0;
 
-    for (let i = 1; i < 6; i++) {
-        const computerChoice = getComputerChoice();
-        const playerChoice = prompt().trim();
-        console.log("================\nRound #" + i + "\n");
-        console.log(`Player:   ${playerChoice}\nComputer: ${computerChoice}`);
+function playGame(playerInput) {
+    if (winner && winner.length >= 0) {
+        alert("The game has finished!")
+        return
+    }
+    globalRoundCount++;
 
-        const result = playRound(playerChoice, computerChoice);
-        console.log(result);
+    const computerChoice = getComputerChoice();
+    const playerChoice = playerInput.trim();
 
-        switch (result[0]){
-            case "P":
-                playerScore++;
-            case "C":
-                computerScore++;
-            case "D":
-                break;
-        }
-        console.log(`The current score is:\nP: ${playerScore} - C:${computerScore}`);
-        console.log("================");
-
+    const result = playRound(playerChoice, computerChoice);
+    switch (result[0]) {
+        case "P":
+            playerScore++;
+            break;
+        case "C":
+            computerScore++;
+            break;
+        case "D":
+            break;
     }
 
-    if (playerScore > computerScore){
-        console.log("Player wins the match!")
-    } else if (playerScore < computerScore){
-        console.log("Player wins the match!")
-    } else{
-        console.log("It's a draw!")
+    const newRoundDiv = document.createElement("div");
+    newRoundDiv.textContent = `Round #${globalRoundCount}`;
+    newRoundDiv.style.cssText = "border: 3px black solid; border-radius: 13px; padding: 1em;"
+    resultsDiv.appendChild(newRoundDiv);
+
+    const newValuesDiv = document.createElement("div");
+    newValuesDiv.textContent = `Player: ${playerChoice} - Computer: ${computerChoice}`;
+    newRoundDiv.appendChild(newValuesDiv);
+
+    const newResDiv = document.createElement("div");
+    newResDiv.textContent = result;
+    newRoundDiv.appendChild(newResDiv);
+
+    scoreDiv.textContent = `Score: P=${playerScore} - C=${computerScore}`;
+    if (playerScore !== computerScore) {
+        if (playerScore === 5) {
+            winner = "Player"
+            const newWinnerDiv = document.createElement("div");
+            newWinnerDiv.textContent = "Winner is: " + winner + "!";
+            newWinnerDiv.style.cssText = "border: 3px black solid; border-radius: 13px; padding: 1em; background-color: red";
+            resultsDiv.append(newWinnerDiv);
+        } else if (computerScore === 5) {
+            winner = "Computer"
+            const newWinnerDiv = document.createElement("div");
+            newWinnerDiv.textContent = "Winner is: " + winner + "!";
+            newWinnerDiv.style.cssText = "border: 3px black solid; border-radius: 13px; padding: 1em; background-color: red";
+            resultsDiv.append(newWinnerDiv);
+        }
     }
 }
 
-// -------- EXECUTION -------- 
+const rock = document.querySelector("#rock");
+const paper = document.querySelector("#paper");
+const scissors = document.querySelector("#scissors");
 
-
-playGame();
-
-
-
-
-
-
-
+rock.addEventListener("click", () => {
+    playGame(rock.textContent);
+});
+paper.addEventListener("click", () => {
+    playGame(paper.textContent);
+});
+scissors.addEventListener("click", () => {
+    playGame(scissors.textContent);
+});
